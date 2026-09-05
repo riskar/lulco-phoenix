@@ -29,7 +29,8 @@
     },
     "suggest": {
         "nette/neon": "Allows use *.neon file as config file and class Phoenix\\Config\\Parser\\NeonConfigParser to parse it",
-        "symfony/yaml": "Allows use *.yml / *.yaml file as config file and class Phoenix\\Config\\Parser\\YamlConfigParser to parse it"
+        "symfony/yaml": "Allows use *.yml / *.yaml file as config file and class Phoenix\\Config\\Parser\\YamlConfigParser to parse it",
+        "ext-cassandra": "Required by the cassandra adapter (Cassandra / ScyllaDB)"
     },
     "bin": ["bin/phoenix"]
 }

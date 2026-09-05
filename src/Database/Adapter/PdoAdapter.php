@@ -31,12 +31,15 @@ abstract class PdoAdapter implements AdapterInterface
     }
 
     /**
-     * @param PDOStatement $sql
+     * @param PDOStatement|StatementInterface $sql
      * @return bool
      * @throws DatabaseQueryExecuteException on error
      */
-    public function execute(PDOStatement $sql): bool
+    public function execute(PDOStatement|StatementInterface $sql): bool
     {
+        if (!$sql instanceof PDOStatement) {
+            throw new InvalidArgumentException('Only PDOStatement can be executed by ' . static::class);
+        }
         $res = $sql->execute();
         if ($res === false) {
             $this->throwError($sql);

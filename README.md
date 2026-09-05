@@ -32,6 +32,7 @@ Framework agnostic database migrations for PHP.
 ### Supported adapters
 - MySQL
 - PostgreSQL
+- Cassandra / ScyllaDB (requires the `cassandra` PHP extension, see [adapters](docs/configuration/adapters.md#cassandra--scylladb))
 
 ## Installation
 

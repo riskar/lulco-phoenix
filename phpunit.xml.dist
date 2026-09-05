@@ -14,6 +14,12 @@
         <env name="PHOENIX_PGSQL_PASSWORD" value=""/>
         <env name="PHOENIX_PGSQL_DATABASE" value="phoenix"/>
         <env name="PHOENIX_PGSQL_CHARSET" value="utf8"/>
+
+        <env name="PHOENIX_CASSANDRA_HOST" value="localhost"/>
+        <env name="PHOENIX_CASSANDRA_PORT" value="9042"/>
+        <env name="PHOENIX_CASSANDRA_KEYSPACE" value="phoenix"/>
+        <env name="PHOENIX_CASSANDRA_USERNAME" value=""/>
+        <env name="PHOENIX_CASSANDRA_PASSWORD" value=""/>
     </php>
     <testsuites>
         <testsuite name="Test suite">

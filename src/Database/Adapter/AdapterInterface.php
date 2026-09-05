@@ -14,12 +14,12 @@ interface AdapterInterface
     /**
      * @throws DatabaseQueryExecuteException on error
      */
-    public function execute(PDOStatement $sql): bool;
+    public function execute(PDOStatement|StatementInterface $sql): bool;
 
     /**
      * @throws DatabaseQueryExecuteException on error
      */
-    public function query(string $sql): PDOStatement;
+    public function query(string $sql): PDOStatement|StatementInterface;
 
     /**
      * @param mixed[] $data
@@ -30,7 +30,7 @@ interface AdapterInterface
     /**
      * @param mixed[] $data
      */
-    public function buildInsertQuery(string $table, array $data): PDOStatement;
+    public function buildInsertQuery(string $table, array $data): PDOStatement|StatementInterface;
 
     /**
      * @param array<string, mixed> $data
@@ -42,7 +42,7 @@ interface AdapterInterface
      * @param array<string, mixed> $data
      * @param array<string, mixed> $conditions
      */
-    public function buildUpdateQuery(string $table, array $data, array $conditions = [], string $where = ''): PDOStatement;
+    public function buildUpdateQuery(string $table, array $data, array $conditions = [], string $where = ''): PDOStatement|StatementInterface;
 
     /**
      * @param array<string, mixed> $conditions
@@ -52,7 +52,7 @@ interface AdapterInterface
     /**
      * @param array<string, mixed> $conditions
      */
-    public function buildDeleteQuery(string $table, array $conditions = [], string $where = ''): PDOStatement;
+    public function buildDeleteQuery(string $table, array $conditions = [], string $where = ''): PDOStatement|StatementInterface;
 
     public function buildDoNotCheckForeignKeysQuery(): string;
 

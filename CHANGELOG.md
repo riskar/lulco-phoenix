@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- Cassandra/Scylla DB adapter
 
 ## [3.0.0] - 2025-12-12
 ### Changed
