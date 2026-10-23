@@ -82,15 +82,15 @@ abstract class AbstractCommand extends Command
 
     /**
      * @param string[] $messages
-     * @param int<0, 511> $options
+     * @param int-mask-of<OutputInterface::VERBOSITY_*|OutputInterface::OUTPUT_*> $options
      */
     protected function writeln(array $messages, int $options = 0): void
     {
+        if (!$this->isDefaultOutput()) {
+            return;
+        }
         foreach ($messages as $message) {
-            $this->output->writeln(
-                $message,
-                $this->isDefaultOutput() ? $options : OutputInterface::OUTPUT_NORMAL | OutputInterface::VERBOSITY_DEBUG,
-            );
+            $this->output->writeln($message, $options);
         }
     }
 

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Phoenix\Migration\Init;
 
 use Phoenix\Database\Adapter\AdapterInterface;
-use Phoenix\Database\Adapter\CassandraAdapter;
+use Phoenix\Database\Adapter\LogTablePrimaryKeyInterface;
 use Phoenix\Database\Element\Column;
 use Phoenix\Exception\InvalidArgumentValueException;
 use Phoenix\Migration\AbstractMigration;
@@ -36,15 +36,13 @@ final class Init extends AbstractMigration
     }
 
     /**
-     * CQL has no autoincrement and every row is addressed by its primary key, so the log table is
-     * keyed by the columns which identify a migration instead of by a generated id.
-     *
-     * @return mixed
+     * Adapters without autoincrement (e.g. CQL) key the log table by the columns which identify
+     * a migration instead of by a generated id.
      */
-    private function primaryKey()
+    private function primaryKey(): mixed
     {
-        if ($this->initAdapter instanceof CassandraAdapter) {
-            return ['migration_datetime', 'classname'];
+        if ($this->initAdapter instanceof LogTablePrimaryKeyInterface) {
+            return $this->initAdapter->getLogTablePrimaryKey();
         }
         return true;
     }

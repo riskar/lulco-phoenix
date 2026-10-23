@@ -6,77 +6,77 @@ namespace Phoenix\Tests\Database\Adapter;
 
 use Phoenix\Config\EnvironmentConfig;
 use Phoenix\Database\Adapter\AdapterFactory;
-use Phoenix\Database\Adapter\CassandraAdapter;
-use Phoenix\Database\Adapter\MysqlAdapter;
-use Phoenix\Database\Adapter\PgsqlAdapter;
-use Phoenix\Database\QueryBuilder\CassandraQueryBuilder;
-use Phoenix\Database\QueryBuilder\MysqlQueryBuilder;
+use Phoenix\Database\Adapter\AdapterFactoryInterface;
+use Phoenix\Database\Adapter\AdapterInterface;
 use Phoenix\Exception\InvalidArgumentValueException;
-use Phoenix\Tests\Helpers\Adapter\CassandraCleanupAdapter;
 use PHPUnit\Framework\TestCase;
 
 final class AdapterFactoryTest extends TestCase
 {
-    public function testMysql(): void
+    private AdapterFactoryInterface $factory;
+
+    private AdapterInterface $adapter;
+
+    protected function setUp(): void
     {
-        $config = new EnvironmentConfig([
-            'adapter' => 'mysql',
-            'dsn' => 'sqlite::memory:',
-        ]);
-        $adapter = AdapterFactory::instance($config);
-        $this->assertInstanceOf(MysqlAdapter::class, $adapter);
-        $this->assertInstanceOf(MysqlQueryBuilder::class, $adapter->getQueryBuilder());
+        $this->adapter = $this->createMock(AdapterInterface::class);
+        $adapter = $this->adapter;
+        $this->factory = new class ($adapter) implements AdapterFactoryInterface {
+            public function __construct(private AdapterInterface $adapter)
+            {
+            }
+
+            public function getAdapterName(): string
+            {
+                return 'fake';
+            }
+
+            public function create(EnvironmentConfig $config): AdapterInterface
+            {
+                return $this->adapter;
+            }
+        };
     }
 
-    public function testPgsql(): void
+    protected function tearDown(): void
     {
-        $config = new EnvironmentConfig([
-            'adapter' => 'pgsql',
-            'dsn' => 'sqlite::memory:',
-        ]);
-        $adapter = AdapterFactory::instance($config);
-        $this->assertInstanceOf(PgsqlAdapter::class, $adapter);
+        AdapterFactory::unregisterFactory($this->factory);
     }
 
-    public function testCassandra(): void
+    public function testUnknownAdapterWithoutRegisteredFactories(): void
     {
-        if (!extension_loaded('cassandra')) {
-            $this->markTestSkipped('Extension "cassandra" is not loaded.');
-        }
-        $config = new EnvironmentConfig([
-            'adapter' => 'cassandra',
-            'host' => getenv('PHOENIX_CASSANDRA_HOST') ?: 'localhost',
-            'port' => (int)(getenv('PHOENIX_CASSANDRA_PORT') ?: 9042),
-            'db_name' => getenv('PHOENIX_CASSANDRA_KEYSPACE') ?: 'phoenix',
-        ]);
-        (new CassandraCleanupAdapter((string)$config->getDbName()))->cleanupDatabase();
-
-        $adapter = AdapterFactory::instance($config);
-        $this->assertInstanceOf(CassandraAdapter::class, $adapter);
-        $this->assertInstanceOf(CassandraQueryBuilder::class, $adapter->getQueryBuilder());
-        $this->assertSame($config->getDbName(), $adapter->getKeyspace());
-        $this->assertNotNull($adapter->getVersion());
-    }
-
-    public function testCassandraWithoutKeyspace(): void
-    {
-        if (!extension_loaded('cassandra')) {
-            $this->markTestSkipped('Extension "cassandra" is not loaded.');
-        }
         $this->expectException(InvalidArgumentValueException::class);
-        $this->expectExceptionMessage('Adapter "cassandra" requires "db_name" (the keyspace) to be set.');
-        AdapterFactory::instance(new EnvironmentConfig(['adapter' => 'cassandra']));
+        $this->expectExceptionMessage('Unknown adapter "fake". No adapter is registered');
+        AdapterFactory::instance(new EnvironmentConfig(['adapter' => 'fake']));
     }
 
-    public function testUnknown(): void
+    public function testRegisteredFactoryCreatesAdapter(): void
     {
-        $config = new EnvironmentConfig([
-            'adapter' => 'unknown',
-            'dsn' => 'sqlite::memory:',
-        ]);
+        AdapterFactory::registerFactory($this->factory);
+        $this->assertSame(['fake'], AdapterFactory::getAdapterNames());
+        $this->assertSame($this->adapter, AdapterFactory::instance(new EnvironmentConfig(['adapter' => 'fake'])));
+    }
 
+    public function testUnknownAdapterListsRegisteredNames(): void
+    {
+        AdapterFactory::registerFactory($this->factory);
         $this->expectException(InvalidArgumentValueException::class);
-        $this->expectExceptionMessage('Unknown adapter "unknown". Use one of value: "mysql", "pgsql", "cassandra".');
-        AdapterFactory::instance($config);
+        $this->expectExceptionMessage('Unknown adapter "unknown". Use one of value: "fake".');
+        AdapterFactory::instance(new EnvironmentConfig(['adapter' => 'unknown']));
+    }
+
+    public function testUnregister(): void
+    {
+        AdapterFactory::registerFactory($this->factory);
+        AdapterFactory::unregisterFactory($this->factory);
+        $this->assertSame([], AdapterFactory::getAdapterNames());
+    }
+
+    public function testNormalizeVersion(): void
+    {
+        $this->assertNull(AdapterFactory::normalizeVersion(null));
+        $this->assertSame('8.0.29', AdapterFactory::normalizeVersion('8.0.29-1.el8'));
+        $this->assertSame('14.2', AdapterFactory::normalizeVersion('14.2 (Debian 14.2-1.pgdg110+1)'));
+        $this->assertSame('5.4', AdapterFactory::normalizeVersion('5.4'));
     }
 }

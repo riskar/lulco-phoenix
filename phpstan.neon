@@ -1,18 +1,9 @@
 parameters:
-    earlyTerminatingMethodCalls:
-        Phoenix\Database\Adapter\PdoAdapter:
-            - throwError
-
-    # the cassandra extension is optional: without it its classes are unknown, and with it the
-    # signatures phpstan reads from reflection do not match what the driver actually accepts
-    reportUnmatchedIgnoredErrors: false
-
     ignoreErrors:
         -
             message: '#^Instanceof between Phoenix\\Database\\Element\\Column and Phoenix\\Database\\Element\\Column will always evaluate to true\.$#'
             path: src/Database/Element/Behavior/PrimaryColumnsBehavior.php
         -
-            message: '#Cassandra#'
-            paths:
-                - src/Database/Adapter/CassandraAdapter.php
-                - src/Database/Adapter/AdapterFactory.php
+            # used by the adapter packages, no adapter lives in core
+            identifier: trait.unused
+            path: src/Database/Adapter/Behavior/StructureBehavior.php

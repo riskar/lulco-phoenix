@@ -1,13 +1,13 @@
 # Phoenix
 Framework agnostic database migrations for PHP.
 
-[![PHP unit](https://github.com/lulco/phoenix/workflows/PHPunit/badge.svg)](https://github.com/lulco/phoenix/actions?query=workflow%3APHPunit)
-[![PHPStan level](https://img.shields.io/badge/PHPStan-level:%208-brightgreen.svg)](https://github.com/lulco/phoenix/actions?query=workflow%3A"PHP+static+analysis")
-[![PHP static analysis](https://github.com/lulco/phoenix/workflows/PHP%20static%20analysis/badge.svg)](https://github.com/lulco/phoenix/actions?query=workflow%3A"PHP+static+analysis")
+[![PHP unit](https://github.com/efabrica/phoenix-core/workflows/PHPunit/badge.svg)](https://github.com/efabrica/phoenix-core/actions?query=workflow%3APHPunit)
+[![PHPStan level](https://img.shields.io/badge/PHPStan-level:%208-brightgreen.svg)](https://github.com/efabrica/phoenix-core/actions?query=workflow%3A"PHP+static+analysis")
+[![PHP static analysis](https://github.com/efabrica/phoenix-core/workflows/PHP%20static%20analysis/badge.svg)](https://github.com/efabrica/phoenix-core/actions?query=workflow%3A"PHP+static+analysis")
 [![SensioLabsInsight](https://insight.symfony.com/projects/dd8723c4-85ea-4c28-b489-9cc7937264d0/mini.png)](https://insight.symfony.com/projects/dd8723c4-85ea-4c28-b489-9cc7937264d0)
-[![Latest Stable Version](https://img.shields.io/packagist/v/lulco/phoenix.svg)](https://packagist.org/packages/lulco/phoenix)
-[![Total Downloads](https://img.shields.io/packagist/dt/lulco/phoenix.svg?style=flat-square)](https://packagist.org/packages/lulco/phoenix)
-[![PHP 7 supported](http://php7ready.timesplinter.ch/lulco/phoenix/master/badge.svg)](https://github.com/lulco/phoenix/actions)
+[![Latest Stable Version](https://img.shields.io/packagist/v/efabrica/phoenix-core.svg)](https://packagist.org/packages/efabrica/phoenix-core)
+[![Total Downloads](https://img.shields.io/packagist/dt/efabrica/phoenix-core.svg?style=flat-square)](https://packagist.org/packages/efabrica/phoenix-core)
+[![PHP 7 supported](http://php7ready.timesplinter.ch/efabrica/phoenix-core/master/badge.svg)](https://github.com/efabrica/phoenix-core/actions)
 ## Features
 - **Comprehensive Validation**: Validate all settings in your migrations before executing the first query, ensuring error-free operations.
 - **Multiple Directories**: Manage multiple migration directories with ease, enhancing organizational capabilities.
@@ -30,17 +30,22 @@ Framework agnostic database migrations for PHP.
 - **Simple Autowiring**: Benefit from simple autowiring in migrations, reducing boilerplate code and enhancing productivity.
 
 ### Supported adapters
-- MySQL
-- PostgreSQL
-- Cassandra / ScyllaDB (requires the `cassandra` PHP extension, see [adapters](docs/configuration/adapters.md#cassandra--scylladb))
+Database adapters live in separate packages, install the one you need next to the core:
+- MySQL: [`efabrica/phoenix-mysql`](https://github.com/efabrica/phoenix-mysql)
+- PostgreSQL: [`efabrica/phoenix-pgsql`](https://github.com/efabrica/phoenix-pgsql)
+- Cassandra / ScyllaDB: [`efabrica/phoenix-scylla`](https://github.com/efabrica/phoenix-scylla) (requires the `cassandra` PHP extension, see [adapters](docs/configuration/adapters.md#cassandra--scylladb))
+
+Both PDO adapters are built on the shared base in [`efabrica/phoenix-pdo`](https://github.com/efabrica/phoenix-pdo), which is installed automatically as their dependency.
+
+Own adapters can be plugged in as well: implement `Phoenix\Database\Adapter\AdapterInterface` and `AdapterFactoryInterface` (or extend `PdoAdapter` / `PdoAdapterFactory` from `efabrica/phoenix-pdo` for a PDO based database) and register the factory via `AdapterFactory::registerFactory()`.
 
 ## Installation
 
 ### Composer
-This library requires PHP 7.4 or later. It works also on PHP 8.0+. The fastest and recommended way to install Phoenix is to add it to your project using Composer (https://getcomposer.org/).
+This library requires PHP 8.4 or later. The fastest and recommended way to install Phoenix is to add it to your project using Composer (https://getcomposer.org/).
 
 ```
-composer require lulco/phoenix
+composer require efabrica/phoenix-core efabrica/phoenix-mysql
 ```
 
 ## Usage
@@ -86,7 +91,7 @@ Read more about configuration [here](docs/configuration/index.md).
 REMEMBER: migrations do some structure changes to the database, therefore the database user used for these migrations has to be able to do these changes.
 
 ### [Commands](docs/commands/index.md)
-To run commands, use command runner `vendor/bin/phoenix` or `vendor/lulco/phoenix/bin/phoenix`.
+To run commands, use command runner `vendor/bin/phoenix` or `vendor/efabrica/phoenix-core/bin/phoenix`.
 
 ##### Available commands:
 - `init` - initialize phoenix

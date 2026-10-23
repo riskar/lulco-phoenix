@@ -9,5 +9,4 @@ example/ export-ignore
 LICENSE export-ignore
 phpunit.xml.dist export-ignore
 README.md export-ignore
-testing_migrations/ export-ignore
 tests/ export-ignore

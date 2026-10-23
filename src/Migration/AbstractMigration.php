@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Phoenix\Migration;
 
-use PDOStatement;
 use Phoenix\Database\Adapter\AdapterInterface;
 use Phoenix\Database\Adapter\StatementInterface;
 use Phoenix\Database\Element\ColumnSettings;
@@ -27,7 +26,7 @@ abstract class AbstractMigration
 
     private string $fullClassName;
 
-    /** @var array<int, string|PDOStatement|StatementInterface|MigrationTable|MigrationView> */
+    /** @var array<int, string|StatementInterface|MigrationTable|MigrationView> */
     private array $queriesToExecute = [];
 
     /** @var string[] list of executed queries */
@@ -92,7 +91,7 @@ abstract class AbstractMigration
     }
 
     /**
-     * @param string|PDOStatement|StatementInterface $sql
+     * @param string|StatementInterface $sql
      */
     final protected function execute($sql): void
     {
@@ -280,7 +279,7 @@ abstract class AbstractMigration
     }
 
     /**
-     * @param array<int, string|PDOStatement|StatementInterface> $queries
+     * @param array<int, string|StatementInterface> $queries
      * @return mixed[]
      * @throws DatabaseQueryExecuteException
      */
@@ -301,13 +300,10 @@ abstract class AbstractMigration
     }
 
     /**
-     * @param string|PDOStatement|StatementInterface $query
+     * @param string|StatementInterface $query
      */
     private function queryToString($query): string
     {
-        if ($query instanceof PDOStatement) {
-            return $query->queryString;
-        }
         if ($query instanceof StatementInterface) {
             return $query->getQueryString();
         }
@@ -333,7 +329,7 @@ abstract class AbstractMigration
     }
 
     /**
-     * @return array<int, string|PDOStatement|StatementInterface>
+     * @return array<int, string|StatementInterface>
      */
     private function prepare(): array
     {
@@ -354,7 +350,7 @@ abstract class AbstractMigration
     }
 
     /**
-     * @return array<string|PDOStatement|StatementInterface>
+     * @return array<string|StatementInterface>
      */
     private function prepareMigrationTableQueries(MigrationTable $table, QueryBuilderInterface $queryBuilder): array
     {

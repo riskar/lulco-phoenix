@@ -2,7 +2,18 @@
 
 You can setup connection to database in environments block of config file. There are several ways to do so:
 
+Adapters are shipped as separate composer packages, the core itself contains no database driver:
+
+| adapter value | package                | requires                                            |
+|---------------|------------------------|-----------------------------------------------------|
+| `mysql`       | `efabrica/phoenix-mysql`  | `ext-pdo`, `ext-pdo_mysql` (uses `efabrica/phoenix-pdo`) |
+| `pgsql`       | `efabrica/phoenix-pgsql`  | `ext-pdo`, `ext-pdo_pgsql` (uses `efabrica/phoenix-pdo`) |
+| `cassandra`   | `efabrica/phoenix-scylla` | `ext-cassandra`                                     |
+
+The package registers its adapters automatically when it is installed via composer. An own adapter is registered with `Phoenix\Database\Adapter\AdapterFactory::registerFactory()` and an implementation of `AdapterFactoryInterface` (one factory per adapter name).
+
 #### MySQL
+This adapter is part of `efabrica/phoenix-mysql`, its [README](https://github.com/efabrica/phoenix-mysql#readme) lists all options, the type mapping and the limitations.
 You can use full config array:
 ```php
 'environments' => [
@@ -30,7 +41,7 @@ or dsn:
 ```
 
 #### PostgreSQL
-This is similar to MySQL. You can use full config array:
+This adapter is part of `efabrica/phoenix-pgsql`, its [README](https://github.com/efabrica/phoenix-pgsql#readme) lists all options, the type mapping and the limitations. This is similar to MySQL. You can use full config array:
 ```php
 'environments' => [
     'env3' => [
@@ -56,12 +67,12 @@ or dsn:
 ```
 
 #### Cassandra / ScyllaDB
-This adapter talks CQL and needs the [`cassandra`](https://github.com/datastax/php-driver) PHP extension (DataStax PHP driver). There is no dsn, `db_name` is the keyspace and it has to exist before migrations are run.
+This adapter is part of `efabrica/phoenix-scylla`, its [README](https://github.com/efabrica/phoenix-scylla#readme) lists all options, the type mapping and the limitations. It talks CQL and needs the [`cassandra`](https://github.com/datastax/php-driver) PHP extension (DataStax PHP driver). There is no dsn, `keyspace` (or `db_name`, both are accepted) names the keyspace and it has to exist before migrations are run.
 ```php
 'environments' => [
     'env5' => [
         'adapter' => 'cassandra',
-        'db_name' => 'phoenix',            // keyspace
+        'keyspace' => 'phoenix',           // or db_name
         'host' => 'node1,node2,node3',     // one or more contact points, separated by comma
         'port' => 9042,                    // optional, default 9042
         'username' => 'cassandra',         // optional

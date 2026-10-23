@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Phoenix\Database\QueryBuilder;
 
 use InvalidArgumentException;
-use PDOStatement;
 use Phoenix\Database\Adapter\AdapterInterface;
 use Phoenix\Database\Adapter\StatementInterface;
 use Phoenix\Database\Element\Column;
@@ -102,7 +101,7 @@ abstract class CommonQueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * @return array<PDOStatement|StatementInterface|string>
+     * @return array<StatementInterface|string>
      */
     protected function addPrimaryKey(MigrationTable $table): array
     {
@@ -293,7 +292,7 @@ abstract class CommonQueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * @return array<PDOStatement|StatementInterface>
+     * @return array<StatementInterface>
      */
     protected function copyAndAddData(MigrationTable $table): array
     {
@@ -319,7 +318,7 @@ abstract class CommonQueryBuilder implements QueryBuilderInterface
     /**
      * @param array<array<string, mixed>> $oldData
      */
-    private function createCopyAndAddDataQuery(MigrationTable $table, array $oldData): PDOStatement|StatementInterface
+    private function createCopyAndAddDataQuery(MigrationTable $table, array $oldData): StatementInterface
     {
         $newData = [];
         foreach ($oldData as $row) {
