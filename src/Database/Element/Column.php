@@ -46,6 +46,17 @@ final class Column
     public const TYPE_LINE = 'line';
     public const TYPE_POLYGON = 'polygon';
 
+    // types below are not supported by every adapter, see docs of the adapter you use
+    public const TYPE_ASCII = 'ascii';
+    public const TYPE_VARINT = 'varint';
+    public const TYPE_COUNTER = 'counter';
+    public const TYPE_INET = 'inet';
+    public const TYPE_TIMEUUID = 'timeuuid';
+    public const TYPE_DURATION = 'duration';
+    public const TYPE_LIST = 'list';
+    public const TYPE_MAP = 'map';
+    public const TYPE_TUPLE = 'tuple';
+
     private string $name;
 
     private string $type;

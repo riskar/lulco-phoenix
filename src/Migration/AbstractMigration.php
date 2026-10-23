@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Phoenix\Migration;
 
-use PDOStatement;
 use Phoenix\Database\Adapter\AdapterInterface;
+use Phoenix\Database\Adapter\StatementInterface;
 use Phoenix\Database\Element\ColumnSettings;
 use Phoenix\Database\Element\MigrationTable;
 use Phoenix\Database\Element\MigrationView;
@@ -26,7 +26,7 @@ abstract class AbstractMigration
 
     private string $fullClassName;
 
-    /** @var array<int, string|PDOStatement|MigrationTable|MigrationView> */
+    /** @var array<int, string|StatementInterface|MigrationTable|MigrationView> */
     private array $queriesToExecute = [];
 
     /** @var string[] list of executed queries */
@@ -91,7 +91,7 @@ abstract class AbstractMigration
     }
 
     /**
-     * @param string|PDOStatement $sql
+     * @param string|StatementInterface $sql
      */
     final protected function execute($sql): void
     {
@@ -279,7 +279,7 @@ abstract class AbstractMigration
     }
 
     /**
-     * @param array<int, string|PDOStatement> $queries
+     * @param array<int, string|StatementInterface> $queries
      * @return mixed[]
      * @throws DatabaseQueryExecuteException
      */
@@ -287,13 +287,27 @@ abstract class AbstractMigration
     {
         $results = [];
         foreach ($queries as $query) {
+            if (is_string($query) && trim($query) === '') {
+                continue;   // adapter has nothing to execute for this step (e.g. foreign key checks in Cassandra)
+            }
             if (!$dry) {
-                $result = $query instanceof PDOStatement ? $this->adapter->execute($query) : $this->adapter->query($query)->fetchAll();
+                $result = is_string($query) ? $this->adapter->query($query)->fetchAll() : $this->adapter->execute($query);
                 $results[] = $result;
             }
-            $this->executedQueries[] = $query instanceof PDOStatement ? $query->queryString : $query;
+            $this->executedQueries[] = $this->queryToString($query);
         }
         return $results;
+    }
+
+    /**
+     * @param string|StatementInterface $query
+     */
+    private function queryToString($query): string
+    {
+        if ($query instanceof StatementInterface) {
+            return $query->getQueryString();
+        }
+        return $query;
     }
 
     /**
@@ -315,7 +329,7 @@ abstract class AbstractMigration
     }
 
     /**
-     * @return array<int, string|PDOStatement>
+     * @return array<int, string|StatementInterface>
      */
     private function prepare(): array
     {
@@ -336,7 +350,7 @@ abstract class AbstractMigration
     }
 
     /**
-     * @return array<string|PDOStatement>
+     * @return array<string|StatementInterface>
      */
     private function prepareMigrationTableQueries(MigrationTable $table, QueryBuilderInterface $queryBuilder): array
     {

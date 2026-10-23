@@ -1,9 +1,9 @@
 parameters:
-    earlyTerminatingMethodCalls:
-        Phoenix\Database\Adapter\PdoAdapter:
-            - throwError
-
     ignoreErrors:
         -
             message: '#^Instanceof between Phoenix\\Database\\Element\\Column and Phoenix\\Database\\Element\\Column will always evaluate to true\.$#'
             path: src/Database/Element/Behavior/PrimaryColumnsBehavior.php
+        -
+            # used by the adapter packages, no adapter lives in core
+            identifier: trait.unused
+            path: src/Database/Adapter/Behavior/StructureBehavior.php

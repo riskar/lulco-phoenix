@@ -77,6 +77,33 @@ final class EnvironmentConfig
         return $this->configuration['version'] ?? null;
     }
 
+    /**
+     * @return string[] one or more contact points of the cluster
+     */
+    public function getHosts(): array
+    {
+        $host = $this->configuration['host'] ?? 'localhost';
+        return array_values(array_filter(array_map('trim', explode(',', (string)$host))));
+    }
+
+    public function getPort(?int $default = null): ?int
+    {
+        return isset($this->configuration['port']) ? (int)$this->configuration['port'] : $default;
+    }
+
+    public function getDbName(): ?string
+    {
+        return $this->configuration['db_name'] ?? null;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOption(string $name)
+    {
+        return $this->configuration[$name] ?? null;
+    }
+
     private function checkConfigValue(string $key): bool
     {
         return isset($this->configuration[$key]) && $this->configuration[$key];

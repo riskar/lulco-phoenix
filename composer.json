@@ -1,5 +1,5 @@
 {
-    "name": "lulco/phoenix",
+    "name": "efabrica/phoenix-core",
     "type": "library",
     "description": "Database Migrations for PHP",
     "keywords": ["PHP", "Database", "Migrations", "Multiple folders", "Query builder", "Create", "Migrate", "Rollback", "Dump", "Status"],
@@ -7,7 +7,6 @@
     "require": {
         "php": "^8.4",
         "ext-json": "*",
-        "ext-pdo": "*",
         "symfony/console": "^8.0",
         "symfony/finder": "^7.0"
     },
@@ -20,7 +19,10 @@
     "autoload": {
         "psr-4": {
             "Phoenix\\": "src/"
-        }
+        },
+        "classmap": [
+            "src/Migration/Init/0_init.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
@@ -28,8 +30,13 @@
         }
     },
     "suggest": {
+        "efabrica/phoenix-mysql": "MySQL adapter (PDO, built on efabrica/phoenix-pdo)",
+        "efabrica/phoenix-pgsql": "PostgreSQL adapter (PDO, built on efabrica/phoenix-pdo)",
+        "efabrica/phoenix-scylla": "Cassandra / ScyllaDB adapter (requires the cassandra PHP extension)",
         "nette/neon": "Allows use *.neon file as config file and class Phoenix\\Config\\Parser\\NeonConfigParser to parse it",
         "symfony/yaml": "Allows use *.yml / *.yaml file as config file and class Phoenix\\Config\\Parser\\YamlConfigParser to parse it"
     },
-    "bin": ["bin/phoenix"]
+    "bin": [
+        "bin/phoenix"
+    ]
 }

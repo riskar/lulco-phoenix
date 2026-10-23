@@ -214,6 +214,4 @@ namespace PHPSTORM_META
         4,
         argumentsSet('phoenix_foreign_key_actions')
     );
-
-    exitPoint(\Phoenix\Database\Adapter\PdoAdapter::throwError());
 }
